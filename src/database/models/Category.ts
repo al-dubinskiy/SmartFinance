@@ -12,8 +12,8 @@ export class Category extends Model {
   @field('order') order!: number;
   @field('is_active') isActive!: boolean;
   
-  @readonly @date('created_at') createdAt!: Date;
-  @readonly @date('updated_at') updatedAt!: Date;
+  @field('created_at') createdAt!: number;
+  @field('updated_at') updatedAt!: number;
 
   @children('transactions') transactions!: any[];
   @children('budgets') budgets!: any[];

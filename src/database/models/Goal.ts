@@ -12,8 +12,8 @@ export class Goal extends Model {
   @text('color') color!: string;
   @field('is_completed') isCompleted!: boolean;
 
-  @readonly @date('created_at') createdAt!: Date;
-  @readonly @date('updated_at') updatedAt!: Date;
+  @field('created_at') createdAt!: number;
+  @field('updated_at') updatedAt!: number;
 
   // Прогресс в процентах
   get progress(): number {

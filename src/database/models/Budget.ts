@@ -11,8 +11,8 @@ export class Budget extends Model {
   @field('year') year!: number | null;
   @field('is_active') isActive!: boolean;
 
-  @readonly @date('created_at') createdAt!: Date;
-  @readonly @date('updated_at') updatedAt!: Date;
+  @field('created_at') createdAt!: number;
+  @field('updated_at') updatedAt!: number;
 
   @relation('categories', 'category_id') category!: any;
 }

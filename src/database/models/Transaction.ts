@@ -14,8 +14,8 @@ export class Transaction extends Model {
   @text('location') location!: string | null;
   @json('attachments') attachments!: any[];
 
-  @readonly @date('created_at') createdAt!: Date;
-  @readonly @date('updated_at') updatedAt!: Date;
+  @field('created_at') createdAt!: number;
+  @field('updated_at') updatedAt!: number;
 
   @relation('categories', 'category_id') category!: any;
 }

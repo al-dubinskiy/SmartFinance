@@ -1,7 +1,9 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "types": ["jest"]
+    "types": ["jest"],
+    "experimentalDecorators": true,  // Включаем поддержку декораторов
+    "emitDecoratorMetadata": true     // Для метаданных (опционально)
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["**/node_modules", "**/Pods"]

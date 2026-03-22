@@ -1,12 +1,12 @@
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin,} from '@react-native-google-signin/google-signin';
 import { Platform } from 'react-native';
 
 // Конфигурация Google Sign-In
 GoogleSignin.configure({
   webClientId: Platform.select({
     ios: 'YOUR_IOS_CLIENT_ID', // Из GoogleService-Info.plist
-    android: 'YOUR_ANDROID_CLIENT_ID', // Из google-services.json
+    android: '778808489756-0efmfujib76cjlph4gg8qo4ip4b9tfug.apps.googleusercontent.com', // Из google-services.json
   }),
 });
 

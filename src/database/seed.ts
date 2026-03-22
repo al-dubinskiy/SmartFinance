@@ -45,8 +45,8 @@ export async function seedDefaultCategories() {
           record.order = category.order;
           record.isActive = true;
           record.parentId = '';
-          record.createdAt = Date.now();
-          record.updatedAt = Date.now();
+          // record.createdAt = Date.now();
+          // record.updatedAt = Date.now();
         });
       }
       
@@ -60,8 +60,8 @@ export async function seedDefaultCategories() {
           record.order = category.order;
           record.isActive = true;
           record.parentId = '';
-          record.createdAt = Date.now();
-          record.updatedAt = Date.now();
+          // record.createdAt = Date.now();
+          // record.updatedAt = Date.now();
         });
       }
     });
