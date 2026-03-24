@@ -1,13 +1,29 @@
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { GoogleSignin,} from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import { Platform } from 'react-native';
 
 // Конфигурация Google Sign-In
 GoogleSignin.configure({
-  webClientId: Platform.select({
-    ios: 'YOUR_IOS_CLIENT_ID', // Из GoogleService-Info.plist
-    android: '778808489756-0efmfujib76cjlph4gg8qo4ip4b9tfug.apps.googleusercontent.com', // Из google-services.json
-  }),
+  webClientId:
+    '778808489756-9q8ndl1a6u2maep68614g8vrpo4hlttn.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
+  scopes: [
+    /* what APIs you want to access on behalf of the user, default is email and profile
+    this is just an example, most likely you don't need this option at all! */
+    'https://www.googleapis.com/auth/drive.readonly',
+  ],
+  offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+  hostedDomain: '', // specifies a hosted domain restriction
+  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
+  accountName: '', // [Android] specifies an account name on the device that should be used
+  // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+  googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. "GoogleService-Info-Staging"
+  openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+  profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
 });
 
 export interface UserCredentials {
@@ -22,10 +38,16 @@ export interface UserProfile {
 
 class FirebaseService {
   // Регистрация по email/пароль
-  async signUpWithEmail({ email, password }: UserCredentials, profile?: UserProfile) {
+  async signUpWithEmail(
+    { email, password }: UserCredentials,
+    profile?: UserProfile,
+  ) {
     try {
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+
       // Обновляем профиль если нужно
       if (profile?.displayName) {
         await userCredential.user.updateProfile({
@@ -33,7 +55,7 @@ class FirebaseService {
           photoURL: profile.photoURL || null,
         });
       }
-      
+
       return {
         user: this.mapFirebaseUser(userCredential.user),
         success: true,
@@ -49,8 +71,11 @@ class FirebaseService {
   // Вход по email/пароль
   async signInWithEmail({ email, password }: UserCredentials) {
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(email, password);
-      
+      const userCredential = await auth().signInWithEmailAndPassword(
+        email,
+        password,
+      );
+
       return {
         user: this.mapFirebaseUser(userCredential.user),
         success: true,
@@ -65,13 +90,47 @@ class FirebaseService {
 
   // Вход через Google
   async signInWithGoogle() {
+    // try {
+    //   await GoogleSignin.hasPlayServices();
+    //   const response = await GoogleSignin.signIn();
+    //   if (isSuccessResponse(response)) {
+    //     return {
+    //       user: response.data.user,
+    //       success: true,
+    //     };
+    //   } else {
+    //     // sign in was cancelled by user
+    //   }
+    // } catch (error) {
+    //   if (isErrorWithCode(error)) {
+    //     switch (error.code) {
+    //       case statusCodes.IN_PROGRESS:
+    //         // operation (eg. sign in) already in progress
+    //         break;
+    //       case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+    //         // Android only, play services not available or outdated
+    //         break;
+    //       default:
+    //       // some other error happened
+    //     }
+    //   } else {
+    //     // an error that's not related to google sign in occurred
+    //   }
+    // }
+
+    // return {
+    //   success: false,
+    //   error: '',
+    // };
     try {
       await GoogleSignin.hasPlayServices();
       const { idToken } = await GoogleSignin.signIn();
-      
+
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      const userCredential = await auth().signInWithCredential(googleCredential);
-      
+      const userCredential = await auth().signInWithCredential(
+        googleCredential,
+      );
+
       return {
         user: this.mapFirebaseUser(userCredential.user),
         success: true,
@@ -122,7 +181,7 @@ class FirebaseService {
 
   // Слушатель изменения состояния аутентификации
   onAuthStateChanged(callback: (user: any | null) => void) {
-    return auth().onAuthStateChanged((user) => {
+    return auth().onAuthStateChanged(user => {
       callback(user ? this.mapFirebaseUser(user) : null);
     });
   }
@@ -141,7 +200,7 @@ class FirebaseService {
   // Обработка ошибок Firebase
   private handleFirebaseError(error: any): string {
     const code = error.code;
-    
+
     switch (code) {
       case 'auth/email-already-in-use':
         return 'This email is already registered';
